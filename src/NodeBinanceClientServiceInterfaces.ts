@@ -16,7 +16,10 @@ export type symbolStatus =
 
 export interface candleDataResult {
     symbol: string,
+    symbolType: dataType,
     interval: CandleChartInterval_LT,
     limit: number,
+    startTime: number,
+    endTime: number,
     candlesData: CandleChartResult[]
 }

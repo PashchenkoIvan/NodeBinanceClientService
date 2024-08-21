@@ -1,4 +1,4 @@
-import Binance, {CandleChartInterval_LT, CandleChartResult} from "binance-api-node"
+import Binance, {CandleChartResult, CandlesOptions} from "binance-api-node"
 import {candleDataResult, dataType, symbolStatus} from "./NodeBinanceClientServiceInterfaces";
 
 class NodeBinanceClientService {
@@ -25,14 +25,34 @@ class NodeBinanceClientService {
             .symbols.filter(symbol => symbol.status === symbolStatus);
     }
 
-    async getTickerCandles(symbol: string, interval:CandleChartInterval_LT = "1d", limit:number = 1) {
-        const candle: CandleChartResult[] = await this.binance_client.futuresCandles({
-            symbol: symbol,
-            interval: interval,
-            limit: limit
-        })
+    async getSpotTickerCandles(options: CandlesOptions) {
+        const candle: CandleChartResult[] = await this.binance_client.candles(options)
 
-        const result: candleDataResult = {symbol: symbol, interval: interval, limit: limit, candlesData: candle}
+        const result: candleDataResult = {
+            symbol: options.symbol,
+            symbolType: "spot",
+            interval: options.interval,
+            limit: options.limit,
+            startTime: options.startTime,
+            endTime: options.endTime,
+            candlesData: candle
+        }
+
+        return result
+    }
+
+    async getFuturesTickerCandles(options: CandlesOptions) {
+        const candle: CandleChartResult[] = await this.binance_client.futuresCandles(options)
+
+        const result: candleDataResult = {
+            symbol: options.symbol,
+            symbolType: "futures",
+            interval: options.interval,
+            limit: options.limit,
+            startTime: options.startTime,
+            endTime: options.endTime,
+            candlesData: candle
+        }
 
         return result
     }
