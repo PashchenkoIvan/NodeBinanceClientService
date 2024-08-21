@@ -5,6 +5,11 @@ export interface findAllTickersInterface {
     tickSize: number
 }
 
+export interface Bid {
+    price: number;
+    quantity: number;
+}
+
 export type dataType =
     | "spot"
     | "futures"
@@ -22,4 +27,26 @@ export interface candleDataResult {
     startTime: number,
     endTime: number,
     candlesData: CandleChartResult[]
+}
+
+export interface resultOrderBookObject {
+    symbol: string,
+    orderBookType: dataType,
+    currentPrice: number,
+    orderBook: orderBookObject
+}
+
+export interface orderBookObject {
+    asks: Bid[],
+    bids: Bid[]
+}
+
+export interface densityObject {
+    averageDensity: number
+    densities: Bid[]
+}
+
+export interface allDensities {
+    asks: densityObject;
+    bids: densityObject
 }
