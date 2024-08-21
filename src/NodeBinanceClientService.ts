@@ -1,5 +1,5 @@
-import Binance from "binance-api-node"
-import {dataType, symbolStatus} from "./NodeBinanceClientServiceInterfaces";
+import Binance, {CandleChartInterval_LT, CandleChartResult} from "binance-api-node"
+import {candleDataResult, dataType, symbolStatus} from "./NodeBinanceClientServiceInterfaces";
 
 class NodeBinanceClientService {
 
@@ -23,5 +23,17 @@ class NodeBinanceClientService {
         return (await this.binance_client
             .exchangeInfo())
             .symbols.filter(symbol => symbol.status === symbolStatus);
+    }
+
+    async getTickerCandles(symbol: string, interval:CandleChartInterval_LT = "1d", limit:number = 1) {
+        const candle: CandleChartResult[] = await this.binance_client.futuresCandles({
+            symbol: symbol,
+            interval: interval,
+            limit: limit
+        })
+
+        const result: candleDataResult = {symbol: symbol, interval: interval, limit: limit, candlesData: candle}
+
+        return result
     }
 }
