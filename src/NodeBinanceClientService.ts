@@ -1,11 +1,11 @@
-import Binance, {CandleChartResult, CandlesOptions} from "binance-api-node"
+import Binance, {CandlesOptions} from "binance-api-node"
 import {
     candleDataResult,
     dataType,
     symbolStatus,
     resultOrderBookObject,
     densityObject,
-    Bid, allDensities
+    Bid, allDensities, trendType, trendResult, CandleChartResult
 } from "./NodeBinanceClientServiceInterfaces";
 
 class NodeBinanceClientService {
@@ -33,7 +33,7 @@ class NodeBinanceClientService {
     }
 
     async getSpotTickerCandles(options: CandlesOptions) {
-        const candle: CandleChartResult[] = await this.binance_client.candles(options)
+        const candles: CandleChartResult[] = await this.binance_client.candles(options)
 
         const result: candleDataResult = {
             symbol: options.symbol,
@@ -42,14 +42,26 @@ class NodeBinanceClientService {
             limit: options.limit,
             startTime: options.startTime,
             endTime: options.endTime,
-            candlesData: candle
+            candlesData: candles.map(candle => ({
+                openTime: Number(candle.openTime),
+                open: Number(candle.open),
+                high: Number(candle.high),
+                low: Number(candle.low),
+                close: Number(candle.close),
+                volume: Number(candle.volume),
+                closeTime: Number(candle.closeTime),
+                quoteVolume: Number(candle.quoteVolume),
+                trades: Number(candle.trades),
+                baseAssetVolume: Number(candle.baseAssetVolume),
+                quoteAssetVolume: Number(candle.quoteAssetVolume)
+            }))
         }
 
         return result
     }
 
     async getFuturesTickerCandles(options: CandlesOptions) {
-        const candle: CandleChartResult[] = await this.binance_client.futuresCandles(options)
+        const candles: CandleChartResult[] = await this.binance_client.futuresCandles(options)
 
         const result: candleDataResult = {
             symbol: options.symbol,
@@ -58,7 +70,19 @@ class NodeBinanceClientService {
             limit: options.limit,
             startTime: options.startTime,
             endTime: options.endTime,
-            candlesData: candle
+            candlesData: candles.map(candle => ({
+                openTime: Number(candle.openTime),
+                open: Number(candle.open),
+                high: Number(candle.high),
+                low: Number(candle.low),
+                close: Number(candle.close),
+                volume: Number(candle.volume),
+                closeTime: Number(candle.closeTime),
+                quoteVolume: Number(candle.quoteVolume),
+                trades: Number(candle.trades),
+                baseAssetVolume: Number(candle.baseAssetVolume),
+                quoteAssetVolume: Number(candle.quoteAssetVolume)
+            }))
         }
 
         return result
@@ -157,5 +181,28 @@ class NodeBinanceClientService {
         const allDensities = this.calcAllTickerDensitiesWithInputData(orderBook, densityCoefficient)
 
         return {symbol: symbol, dataType: "futures", asks: allDensities.asks, bids: allDensities.bids}
+    }
+
+    calcTrend(inputData: CandleChartResult[]):trendResult {
+        const calcChange = inputData[inputData.length - 1].close - inputData[0].open
+        const percentChange: number = Math.abs((inputData[inputData.length - 1].close - inputData[0].open) / inputData[0].open) * 100
+
+        if (calcChange > 0) {
+            return {trend: "Up", percentChange: percentChange}
+        } else if (calcChange < 0) {
+            return {trend: "Down", percentChange: percentChange}
+        } else {
+            return {trend: "Not changed", percentChange: percentChange}
+        }
+    }
+
+    async getSpotTrend(options: CandlesOptions) {
+        const candles = await this.binance_client.candles(options)
+        return this.calcTrend(candles)
+    }
+
+    async getFuturesTrend(options: CandlesOptions) {
+        const candles = await this.binance_client.futuresCandles(options)
+        return this.calcTrend(candles)
     }
 }

@@ -1,4 +1,4 @@
-import {CandleChartInterval_LT, CandleChartResult} from "binance-api-node";
+import {CandleChartInterval_LT} from "binance-api-node";
 
 export interface findAllTickersInterface {
     ticker: string,
@@ -19,6 +19,11 @@ export type symbolStatus =
     | "SETTLING"
     | "PENDING_TRADING"
 
+export type trendType =
+    | "Up"
+    | "Down"
+    | "Not changed"
+
 export interface candleDataResult {
     symbol: string,
     symbolType: dataType,
@@ -27,6 +32,20 @@ export interface candleDataResult {
     startTime: number,
     endTime: number,
     candlesData: CandleChartResult[]
+}
+
+export interface CandleChartResult {
+    openTime: number
+    open: number
+    high: number
+    low: number
+    close: number
+    volume: number
+    closeTime: number
+    quoteVolume: number
+    trades: number
+    baseAssetVolume: number
+    quoteAssetVolume: number
 }
 
 export interface resultOrderBookObject {
@@ -49,4 +68,9 @@ export interface densityObject {
 export interface allDensities {
     asks: densityObject;
     bids: densityObject
+}
+
+export interface trendResult {
+    trend: trendType,
+    percentChange: number
 }
