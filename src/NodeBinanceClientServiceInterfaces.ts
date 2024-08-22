@@ -24,7 +24,7 @@ export type trendType =
     | "Down"
     | "Not changed"
 
-export interface candleDataResult {
+export interface CandleDataResult {
     symbol: string,
     symbolType: dataType,
     interval: CandleChartInterval_LT,
@@ -73,4 +73,14 @@ export interface allDensities {
 export interface trendResult {
     trend: trendType,
     percentChange: number
+}
+
+export interface tickerCorrelation {
+    symbol: string,
+    correlation: number
+}
+
+export interface getCorrelationResult {
+    symbol: string,
+    correlationArray: tickerCorrelation[]
 }

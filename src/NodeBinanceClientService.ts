@@ -1,11 +1,11 @@
 import Binance, {CandlesOptions} from "binance-api-node"
 import {
-    candleDataResult,
+    CandleDataResult,
     dataType,
     symbolStatus,
     resultOrderBookObject,
     densityObject,
-    Bid, allDensities, trendType, trendResult, CandleChartResult
+    Bid, allDensities, trendType, trendResult, CandleChartResult, tickerCorrelation, getCorrelationResult
 } from "./NodeBinanceClientServiceInterfaces";
 
 class NodeBinanceClientService {
@@ -35,7 +35,7 @@ class NodeBinanceClientService {
     async getSpotTickerCandles(options: CandlesOptions) {
         const candles: CandleChartResult[] = await this.binance_client.candles(options)
 
-        const result: candleDataResult = {
+        const result: CandleDataResult = {
             symbol: options.symbol,
             symbolType: "spot",
             interval: options.interval,
@@ -63,7 +63,7 @@ class NodeBinanceClientService {
     async getFuturesTickerCandles(options: CandlesOptions) {
         const candles: CandleChartResult[] = await this.binance_client.futuresCandles(options)
 
-        const result: candleDataResult = {
+        const result: CandleDataResult = {
             symbol: options.symbol,
             symbolType: "futures",
             interval: options.interval,
@@ -204,5 +204,60 @@ class NodeBinanceClientService {
     async getFuturesTrend(options: CandlesOptions) {
         const candles = await this.binance_client.futuresCandles(options)
         return this.calcTrend(candles)
+    }
+
+    calcCorrelation(firstTickerCandlesData: CandleDataResult, secondTickerCandlesData: CandleDataResult) {
+        const n = firstTickerCandlesData.candlesData.length;
+        const meanX = firstTickerCandlesData.candlesData.reduce((sum, val) => sum + val.close, 0) / n;
+        const meanY = secondTickerCandlesData.candlesData.reduce((sum, val) => sum + val.close, 0) / n;
+
+        let numerator = 0;
+        let sumXDiffSquared = 0;
+        let sumYDiffSquared = 0;
+
+        for (let i = 0; i < n; i++) {
+            const xDiff = firstTickerCandlesData.candlesData[i].close - meanX;
+            const yDiff = secondTickerCandlesData.candlesData[i].close - meanY;
+            numerator += xDiff * yDiff;
+            sumXDiffSquared += xDiff ** 2;
+            sumYDiffSquared += yDiff ** 2;
+        }
+
+        return numerator / Math.sqrt(sumXDiffSquared * sumYDiffSquared);
+    }
+
+    async getSpotCorrelation(tickersArrayOptions: CandlesOptions[], secondTickerOptions: CandlesOptions) {
+        const maxGroupLength: number = 20;
+        const tickersCandlesDataArray: CandleDataResult[] = []
+
+        for (let i = 0; i < tickersArrayOptions.length; i += maxGroupLength) {
+            const tickerGroup =
+                tickersArrayOptions.length - i > maxGroupLength ?
+                    tickersArrayOptions.slice(i, i + maxGroupLength) :
+                    tickersArrayOptions.slice(i, tickersArrayOptions.length);
+
+            await Promise.all(
+                tickerGroup.map(async (symbol) => {
+                    tickersCandlesDataArray.push(await this.getSpotTickerCandles(symbol))
+                })
+            );
+        }
+
+        const secondCandlesDataArray: CandleDataResult = await this.getSpotTickerCandles(secondTickerOptions);
+        const tickerCorrelationArray: tickerCorrelation[] = []
+
+        tickersCandlesDataArray.forEach(tickerData => {
+            tickerCorrelationArray.push({
+                symbol: tickerData.symbol,
+                correlation: this.calcCorrelation(tickerData, secondCandlesDataArray)
+            })
+        })
+
+        const result: getCorrelationResult = {
+            symbol: secondCandlesDataArray.symbol,
+            correlationArray: tickerCorrelationArray
+        }
+
+        return result
     }
 }
