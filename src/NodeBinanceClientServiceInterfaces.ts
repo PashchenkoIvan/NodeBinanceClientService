@@ -84,3 +84,8 @@ export interface getCorrelationResult {
     symbol: string,
     correlationArray: tickerCorrelation[]
 }
+
+export interface apisData {
+    binanceApiKey: string,
+    binanceSecretKey: string
+}

@@ -12,10 +12,10 @@ class NodeBinanceClientService {
 
     private binance_client
 
-    constructor(binance_api_key: string, binance_secret_key: string) {
+    constructor(options: {binance_api_key: string, binance_secret_key: string} = {binance_api_key: "", binance_secret_key: ""}) {
         this.binance_client = Binance({
-            apiKey: binance_api_key,
-            apiSecret: binance_secret_key,
+            apiKey: options.binance_api_key,
+            apiSecret: options.binance_secret_key,
             getTime: () => new Date().getTime()
         })
     }
