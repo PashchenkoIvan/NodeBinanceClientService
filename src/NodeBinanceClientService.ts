@@ -20,6 +20,14 @@ class NodeBinanceClientService {
         })
     }
 
+    async ping() {
+        return this.binance_client.ping()
+    }
+
+    async time() {
+        return this.binance_client.time()
+    }
+
     async getAllFuturesTickers(symbolStatus: symbolStatus) {
         return (await this.binance_client
             .futuresExchangeInfo())
@@ -244,6 +252,41 @@ class NodeBinanceClientService {
         }
 
         const secondCandlesDataArray: CandleDataResult = await this.getSpotTickerCandles(secondTickerOptions);
+        const tickerCorrelationArray: tickerCorrelation[] = []
+
+        tickersCandlesDataArray.forEach(tickerData => {
+            tickerCorrelationArray.push({
+                symbol: tickerData.symbol,
+                correlation: this.calcCorrelation(tickerData, secondCandlesDataArray)
+            })
+        })
+
+        const result: getCorrelationResult = {
+            symbol: secondCandlesDataArray.symbol,
+            correlationArray: tickerCorrelationArray
+        }
+
+        return result
+    }
+
+    async getFuturesCorrelation(tickersArrayOptions: CandlesOptions[], secondTickerOptions: CandlesOptions) {
+        const maxGroupLength: number = 20;
+        const tickersCandlesDataArray: CandleDataResult[] = []
+
+        for (let i = 0; i < tickersArrayOptions.length; i += maxGroupLength) {
+            const tickerGroup =
+                tickersArrayOptions.length - i > maxGroupLength ?
+                    tickersArrayOptions.slice(i, i + maxGroupLength) :
+                    tickersArrayOptions.slice(i, tickersArrayOptions.length);
+
+            await Promise.all(
+                tickerGroup.map(async (symbol) => {
+                    tickersCandlesDataArray.push(await this.getFuturesTickerCandles(symbol))
+                })
+            );
+        }
+
+        const secondCandlesDataArray: CandleDataResult = await this.getFuturesTickerCandles(secondTickerOptions);
         const tickerCorrelationArray: tickerCorrelation[] = []
 
         tickersCandlesDataArray.forEach(tickerData => {
