@@ -89,3 +89,14 @@ export interface apisData {
     binanceApiKey: string,
     binanceSecretKey: string
 }
+
+export interface PumpDumpResult {
+    symbol: string,
+    symbolType: dataType,
+    interval: CandleChartInterval_LT,
+    limit: number,
+    startTime: number,
+    endTime: number,
+    pumps: CandleChartResult[],
+    dumps: CandleChartResult[]
+}

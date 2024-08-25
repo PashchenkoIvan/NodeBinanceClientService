@@ -5,7 +5,14 @@ import {
     symbolStatus,
     resultOrderBookObject,
     densityObject,
-    Bid, allDensities, trendType, trendResult, CandleChartResult, tickerCorrelation, getCorrelationResult
+    Bid,
+    allDensities,
+    trendType,
+    trendResult,
+    CandleChartResult,
+    tickerCorrelation,
+    getCorrelationResult,
+    PumpDumpResult
 } from "./NodeBinanceClientServiceInterfaces";
 
 class NodeBinanceClientService {
@@ -26,6 +33,14 @@ class NodeBinanceClientService {
 
     async time() {
         return this.binance_client.time()
+    }
+
+    calcPercentChange (openPrice: number, closePrice: number, includeMinus: boolean) {
+        if (includeMinus) {
+            return ((closePrice - openPrice) / openPrice) * 100
+        } else {
+            return Math.abs(((closePrice - openPrice) / openPrice) * 100)
+        }
     }
 
     async getAllFuturesTickers(symbolStatus: symbolStatus) {
@@ -302,5 +317,44 @@ class NodeBinanceClientService {
         }
 
         return result
+    }
+
+    calcPumpsDumps (candleData: CandleDataResult, coefficient: number): PumpDumpResult {
+        const result: PumpDumpResult = {
+            symbol: candleData.symbol,
+            symbolType: candleData.symbolType,
+            interval: candleData.interval,
+            limit: candleData.limit,
+            startTime: candleData.startTime,
+            endTime: candleData.endTime,
+            pumps: [],
+            dumps: []
+        }
+
+        let percentsSum: number = 0
+        candleData.candlesData.forEach(candle => {
+            percentsSum += this.calcPercentChange(candle.open, candle.close, false)
+        })
+
+        const averageChange = percentsSum / candleData.candlesData.length
+
+        candleData.candlesData.forEach(candle => {
+            if (this.calcPercentChange(candle.open, candle.close, false) >= averageChange * coefficient) {
+                if (candle.open < candle.close) result.pumps.push(candle)
+                else result.dumps.push(candle)
+            }
+        })
+
+        return result
+    }
+
+    async getSpotPumpsDumps (tickerOption: CandlesOptions, coefficient: number) {
+        const tickerCandles = await this.getSpotTickerCandles(tickerOption)
+        return this.calcPumpsDumps(tickerCandles, coefficient)
+    }
+
+    async getFuturesPumpsDumps (tickerOption: CandlesOptions, coefficient: number) {
+        const tickerCandles = await this.getFuturesTickerCandles(tickerOption)
+        return this.calcPumpsDumps(tickerCandles, coefficient)
     }
 }
