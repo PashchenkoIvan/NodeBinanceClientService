@@ -1,13 +1,13 @@
 {
   "name": "nodebinanceclientservice",
   "version": "1.0.0",
-  "description": "Node.ts library with convenient Binance api functionality for writing trading strategies and indicators",
+  "description": "Node.ts module that extends the binance-api-node library with new functionality.",
   "main": "src/NodeBinanceClientService.ts",
   "scripts": {
     "build": "tsc",
     "start": "npm run build && node dist/NodeBinanceClientService.js"
   },
-  "author": "",
+  "author": "IvanPashchenko",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.8.4",
