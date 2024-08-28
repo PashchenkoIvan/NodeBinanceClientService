@@ -3,6 +3,9 @@ NodeBinanceClientService is Node.ts library with convenient Binance api function
 The library is designed for comfortable writing of trading strategies and indicators in the Node.js environment.
 
 # Installation
+```
+npm i nodebinanceclientservice
+```
 
 # Getting Started
 To get started with this module, import it and create a client instance. API keys are optional unless you need to make authenticated requests. You can generate an API key here.
