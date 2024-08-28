@@ -24,6 +24,10 @@ export type trendType =
     | "Down"
     | "Not changed"
 
+export type pumpDump =
+    | "PUMP"
+    | "DUMP"
+
 export interface CandleDataResult {
     symbol: string,
     symbolType: dataType,

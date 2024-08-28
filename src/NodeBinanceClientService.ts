@@ -12,7 +12,8 @@ import {
     CandleChartResult,
     tickerCorrelation,
     getCorrelationResult,
-    PumpDumpResult
+    PumpDumpResult,
+    pumpDump
 } from "./NodeBinanceClientServiceInterfaces";
 
 class NodeBinanceClientService {
@@ -25,14 +26,6 @@ class NodeBinanceClientService {
             apiSecret: options.binance_secret_key,
             getTime: () => new Date().getTime()
         })
-    }
-
-    async ping() {
-        return this.binance_client.ping()
-    }
-
-    async time() {
-        return this.binance_client.time()
     }
 
     calcPercentChange (openPrice: number, closePrice: number, includeMinus: boolean) {
