@@ -351,3 +351,5 @@ class NodeBinanceClientService {
         return this.calcPumpsDumps(tickerCandles, coefficient)
     }
 }
+
+module.exports(NodeBinanceClientService)
