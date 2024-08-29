@@ -15,13 +15,9 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.8.4",
-    "@types/node-telegram-bot-api": "^0.64.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "beepbeep": "^1.3.0",
-    "binance-api-node": "^0.12.7",
-    "node-telegram-bot-api": "^0.64.0",
-    "ws": "^8.14.2"
+    "binance-api-node": "^0.12.7"
   }
 }
