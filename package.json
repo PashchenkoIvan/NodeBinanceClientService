@@ -1,7 +1,11 @@
 {
-  "name": "nodebinanceclientservice",
+  "name": "node_binance_client_service",
   "version": "1.0.0",
   "description": "Node.ts module that extends the binance-api-node library with new functionality.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PashchenkoIvan/NodeBinanceClientService.git"
+  },
   "main": "src/NodeBinanceClientService.ts",
   "scripts": {
     "build": "tsc",
