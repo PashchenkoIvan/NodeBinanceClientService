@@ -1,6 +1,6 @@
 import {CandleChartInterval_LT} from "binance-api-node";
 
-export interface findAllTickersInterface {
+export interface FindAllTickersInterface {
     ticker: string,
     tickSize: number
 }
@@ -10,27 +10,27 @@ export interface Bid {
     quantity: number;
 }
 
-export type dataType =
+export type DataType =
     | "spot"
     | "futures"
 
-export type symbolStatus =
+export type SymbolStatus =
     | "TRADING"
     | "SETTLING"
     | "PENDING_TRADING"
 
-export type trendType =
+export type TrendType =
     | "Up"
     | "Down"
     | "Not changed"
 
-export type pumpDump =
+export type PumpDump =
     | "PUMP"
     | "DUMP"
 
 export interface CandleDataResult {
     symbol: string,
-    symbolType: dataType,
+    symbolType: DataType,
     interval: CandleChartInterval_LT,
     limit: number,
     startTime: number,
@@ -52,51 +52,51 @@ export interface CandleChartResult {
     quoteAssetVolume: number
 }
 
-export interface resultOrderBookObject {
+export interface ResultOrderBookObject {
     symbol: string,
-    orderBookType: dataType,
+    orderBookType: DataType,
     currentPrice: number,
-    orderBook: orderBookObject
+    orderBook: OrderBookObject
 }
 
-export interface orderBookObject {
+export interface OrderBookObject {
     asks: Bid[],
     bids: Bid[]
 }
 
-export interface densityObject {
+export interface DensityObject {
     averageDensity: number
     densities: Bid[]
 }
 
-export interface allDensities {
-    asks: densityObject;
-    bids: densityObject
+export interface AllDensities {
+    asks: DensityObject;
+    bids: DensityObject
 }
 
-export interface trendResult {
-    trend: trendType,
+export interface TrendResult {
+    trend: TrendType,
     percentChange: number
 }
 
-export interface tickerCorrelation {
+export interface TickerCorrelation {
     symbol: string,
     correlation: number
 }
 
-export interface getCorrelationResult {
+export interface GetCorrelationResult {
     symbol: string,
-    correlationArray: tickerCorrelation[]
+    correlationArray: TickerCorrelation[]
 }
 
-export interface apisData {
+export interface ApisData {
     binanceApiKey: string,
     binanceSecretKey: string
 }
 
 export interface PumpDumpResult {
     symbol: string,
-    symbolType: dataType,
+    symbolType: DataType,
     interval: CandleChartInterval_LT,
     limit: number,
     startTime: number,

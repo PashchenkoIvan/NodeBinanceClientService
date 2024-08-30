@@ -1,5 +1,5 @@
 {
-  "name": "node_binance_client_service",
+  "name": "node-binance-client-service",
   "version": "1.0.2",
   "description": "Node.ts module that extends the binance-api-node library with new functionality.",
   "repository": {

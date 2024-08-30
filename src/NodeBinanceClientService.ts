@@ -1,19 +1,19 @@
 import Binance, {CandlesOptions} from "binance-api-node"
 import {
     CandleDataResult,
-    dataType,
-    symbolStatus,
-    resultOrderBookObject,
-    densityObject,
+    DataType,
+    SymbolStatus,
+    ResultOrderBookObject,
+    DensityObject,
     Bid,
-    allDensities,
-    trendType,
-    trendResult,
+    AllDensities,
+    TrendType,
+    TrendResult,
     CandleChartResult,
-    tickerCorrelation,
-    getCorrelationResult,
+    TickerCorrelation,
+    GetCorrelationResult,
     PumpDumpResult,
-    pumpDump
+    PumpDump
 } from "./NodeBinanceClientServiceInterfaces";
 
 class NodeBinanceClientService {
@@ -36,13 +36,13 @@ class NodeBinanceClientService {
         }
     }
 
-    async getAllFuturesTickers(symbolStatus: symbolStatus) {
+    async getAllFuturesTickers(symbolStatus: SymbolStatus) {
         return (await this.binance_client
             .futuresExchangeInfo())
             .symbols.filter(symbol => symbol.status === symbolStatus);
     }
 
-    async getAllSpotTickers(symbolStatus: symbolStatus) {
+    async getAllSpotTickers(symbolStatus: SymbolStatus) {
         return (await this.binance_client
             .exchangeInfo())
             .symbols.filter(symbol => symbol.status === symbolStatus);
@@ -108,7 +108,7 @@ class NodeBinanceClientService {
         const currentPrice = await this.binance_client.prices({symbol: symbol})
         const spotOrderBook = await this.binance_client.book({symbol: symbol, limit: orderBookLimit})
 
-        const resultObject: resultOrderBookObject = {
+        const resultObject: ResultOrderBookObject = {
             symbol: symbol,
             orderBookType: "spot",
             currentPrice: parseFloat(currentPrice[symbol]),
@@ -125,7 +125,7 @@ class NodeBinanceClientService {
         const currentPrice = await this.binance_client.futuresPrices({symbol: symbol})
         const futuresOrderBook = await this.binance_client.futuresBook({symbol: symbol, limit: orderBookLimit})
 
-        const resultObject: resultOrderBookObject = {
+        const resultObject: ResultOrderBookObject = {
             symbol: symbol,
             orderBookType: "futures",
             currentPrice: parseFloat(currentPrice[symbol]),
@@ -138,7 +138,7 @@ class NodeBinanceClientService {
         return resultObject
     }
 
-    calcAllTickerDensitiesWithInputData(inputData: resultOrderBookObject, coefficient: number) {
+    calcAllTickerDensitiesWithInputData(inputData: ResultOrderBookObject, coefficient: number) {
 
         const asksDensities: Bid[] = []
         const bidsDensities: Bid[] = []
@@ -171,7 +171,7 @@ class NodeBinanceClientService {
             }
         })
 
-        const result: allDensities = {
+        const result: AllDensities = {
             asks: {
                 averageDensity: average_asks_quantity_sum,
                 densities: asksDensities
@@ -199,7 +199,7 @@ class NodeBinanceClientService {
         return {symbol: symbol, dataType: "futures", asks: allDensities.asks, bids: allDensities.bids}
     }
 
-    calcTrend(inputData: CandleChartResult[]):trendResult {
+    calcTrend(inputData: CandleChartResult[]):TrendResult {
         const calcChange = inputData[inputData.length - 1].close - inputData[0].open
         const percentChange: number = Math.abs((inputData[inputData.length - 1].close - inputData[0].open) / inputData[0].open) * 100
 
@@ -260,7 +260,7 @@ class NodeBinanceClientService {
         }
 
         const secondCandlesDataArray: CandleDataResult = await this.getSpotTickerCandles(secondTickerOptions);
-        const tickerCorrelationArray: tickerCorrelation[] = []
+        const tickerCorrelationArray: TickerCorrelation[] = []
 
         tickersCandlesDataArray.forEach(tickerData => {
             tickerCorrelationArray.push({
@@ -269,7 +269,7 @@ class NodeBinanceClientService {
             })
         })
 
-        const result: getCorrelationResult = {
+        const result: GetCorrelationResult = {
             symbol: secondCandlesDataArray.symbol,
             correlationArray: tickerCorrelationArray
         }
@@ -295,7 +295,7 @@ class NodeBinanceClientService {
         }
 
         const secondCandlesDataArray: CandleDataResult = await this.getFuturesTickerCandles(secondTickerOptions);
-        const tickerCorrelationArray: tickerCorrelation[] = []
+        const tickerCorrelationArray: TickerCorrelation[] = []
 
         tickersCandlesDataArray.forEach(tickerData => {
             tickerCorrelationArray.push({
@@ -304,7 +304,7 @@ class NodeBinanceClientService {
             })
         })
 
-        const result: getCorrelationResult = {
+        const result: GetCorrelationResult = {
             symbol: secondCandlesDataArray.symbol,
             correlationArray: tickerCorrelationArray
         }
@@ -353,3 +353,6 @@ class NodeBinanceClientService {
 }
 
 module.exports = NodeBinanceClientService
+
+const binanceClient = new NodeBinanceClientService()
+const percentChange = binanceClient.calcPercentChange(openPrice, closePrice, isIncludeMinus)
