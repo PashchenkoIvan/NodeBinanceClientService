@@ -353,6 +353,3 @@ class NodeBinanceClientService {
 }
 
 module.exports = NodeBinanceClientService
-
-const binanceClient = new NodeBinanceClientService()
-const percentChange = binanceClient.calcPercentChange(openPrice, closePrice, isIncludeMinus)
