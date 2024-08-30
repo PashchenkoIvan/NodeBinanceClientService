@@ -12,7 +12,7 @@
     "start": "npm run build && node dist/NodeBinanceClientService.js"
   },
   "author": "IvanPashchenko",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.8.4",
     "typescript": "^5.2.2"
