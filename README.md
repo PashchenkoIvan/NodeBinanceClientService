@@ -70,26 +70,364 @@ const result = calcTrend(inputData);
 | `trend`         | string  | The trend direction: "Up", "Down", or "Not changed" |
 | `percentChange` | number  | The percentage change from the opening to the closing price |
 
-# calcCorrelation
+## calcCorrelation
 
 This TypeScript function, `calcCorrelation`, calculates the correlation coefficient between the closing prices of two sets of candle chart data. The correlation coefficient measures the strength and direction of the linear relationship between the two datasets.
 
-## Parameters
+### Parameters
 
 | Parameter                | Type                | Description                                                                 |
 |--------------------------|---------------------|-----------------------------------------------------------------------------|
 | `firstTickerCandlesData` | `CandleDataResult`  | An object containing the first set of candle chart data.                    |
 | `secondTickerCandlesData`| `CandleDataResult`  | An object containing the second set of candle chart data.                   |
 
-## Usage
+### Usage
 ```typescript
 const correlation = calcCorrelation(firstTickerCandlesData, secondTickerCandlesData);
 ```
 
-## Result
+### Result
 | Type    | Description                                                                                   |
 |---------|-----------------------------------------------------------------------------------------------|
 | number  | The correlation coefficient between the closing prices of the two ticker candle data sets. This value ranges from -1 to 1, indicating the strength and direction of the linear relationship. |
+
+## calcPumpsDumps
+This TypeScript function, calcPumpsDumps, identifies significant price movements (pumps and dumps) in a set of candle chart data based on a specified coefficient. It calculates the average percentage change in price and then determines which candles exceed this average change by the given coefficient.
+
+### Parameters
+| Parameter     | Type             | Description                                                                               |
+|---------------|------------------|-------------------------------------------------------------------------------------------|
+| `candleData`  | CandleDataResult | An object containing the candle chart data, including symbol, interval, and candles data. |
+| `coefficient` | number           | A multiplier used to determine the threshold for significant price changes.               |
+
+### Usage
+```typescript
+const result = calcPumpsDumps(candleData, coefficient);
+```
+
+### Result
+| Type            | Description                                                                                                                                |
+|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| PumpDumpResult  | An object containing the symbol, symbol type, interval, limit, start time, end time, and arrays of candles identified as pumps and dumps.  |
+
+
+# (Async) GET functions
+
+## getAllFuturesTickers
+This asynchronous TypeScript function, getAllFuturesTickers, retrieves all futures tickers from the Binance API and filters them based on their status.
+
+### Parameters
+| Parameter     | Type             | Description                                                                              |
+|---------------|------------------|------------------------------------------------------------------------------------------|
+| `symbolStatus`  | SymbolStatus | The status of the symbols to filter by (e.g., TRADING, BREAK, etc.).|
+
+### Usage
+```typescript
+const tickers = await getAllFuturesTickers('TRADING');
+```
+
+### Result
+| Type  | Description                                                                                                                                |
+|-------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| Array | An array of symbols that match the specified status.  |
+
+## getAllSpotTickers
+This asynchronous TypeScript function, getAllSpotTickers, retrieves all spot tickers from the Binance API and filters them based on their status.
+
+### Parameters
+| Parameter     | Type             | Description                                                                              |
+|---------------|------------------|------------------------------------------------------------------------------------------|
+| `symbolStatus`  | SymbolStatus | The status of the symbols to filter by (e.g., TRADING, BREAK, etc.).|
+
+### Usage
+```typescript
+const tickers = await getAllSpotTickers('TRADING');
+```
+
+### Result
+| Type  | Description                                                                                                                                |
+|-------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| Array | An array of symbols that match the specified status.  |
+
+## getSpotTickerCandles
+This asynchronous TypeScript function, getSpotTickerCandles, retrieves candle chart data for a specified spot ticker from the Binance API and formats it into a structured result.
+
+### Parameters
+| Parameter     | Type             | Description                                                                              |
+|---------------|------------------|------------------------------------------------------------------------------------------|
+| `options`  | CandlesOptions | An object containing options for retrieving the candle data, such as symbol, interval, limit, start time, and end time.|
+
+### Usage
+```typescript
+const options = {
+    symbol: "BTCUSDT",
+    interval: "1h",
+    limit: 100,
+    startTime: 1622505600000,
+    endTime: 1622592000000
+};
+const result = await getSpotTickerCandles(options);
+```
+
+### Result
+| Type  | Description                                                                                                                                |
+|-------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| CandleDataResult | An object containing the symbol, symbol type, interval, limit, start time, end time, and an array of formatted candle data.  |
+
+## getFuturesTickerCandles
+This asynchronous TypeScript function, getFuturesTickerCandles, retrieves candle chart data for a specified futures ticker from the Binance API and formats it into a structured result.
+
+### Parameters
+| Parameter     | Type             | Description                                                                              |
+|---------------|------------------|------------------------------------------------------------------------------------------|
+| `options`  | CandlesOptions | An object containing options for retrieving the candle data, such as symbol, interval, limit, start time, and end time.|
+
+### Usage
+```typescript
+const options = {
+    symbol: "BTCUSDT",
+    interval: "1h",
+    limit: 100,
+    startTime: 1622505600000,
+    endTime: 1622592000000
+};
+const result = await getFuturesTickerCandles(options);
+```
+
+### Result
+| Type  | Description                                                                                                                                |
+|-------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| CandleDataResult | An object containing the symbol, symbol type, interval, limit, start time, end time, and an array of formatted candle data.  |
+
+## getSpotOrderBook
+This asynchronous TypeScript function, getSpotOrderBook, retrieves the current price and order book for a specified spot ticker from the Binance API and formats it into a structured result.
+
+### Parameters
+| Parameter     | Type   | Description                                                                              |
+|---------------|--------|------------------------------------------------------------------------------------------|
+| `symbol`  | string | The symbol for which to retrieve the order book (e.g., BTCUSDT).|
+| `orderBookLimit`  | number | The limit on the number of orders to retrieve for the order book.|
+
+### Usage
+```typescript
+const orderBook = await getSpotOrderBook('BTCUSDT', 100);
+```
+
+### Result
+| Type  | Description                                                                                                                               |
+|-------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| ResultOrderBookObject | An object containing the symbol, order book type, current price, and the order book data (asks and bids).|
+
+## getFuturesOrderBook
+This asynchronous TypeScript function, getFuturesOrderBook, retrieves the current price and order book for a specified futures ticker from the Binance API and formats it into a structured result.
+
+### Parameters
+| Parameter     | Type   | Description                                                                              |
+|---------------|--------|------------------------------------------------------------------------------------------|
+| `symbol`  | string | The symbol for which to retrieve the order book (e.g., BTCUSDT).|
+| `orderBookLimit`  | number | The limit on the number of orders to retrieve for the order book.|
+
+### Usage
+```typescript
+const orderBook = await getFuturesOrderBook('BTCUSDT', 100);
+```
+
+### Result
+| Type  | Description                                                                                                                               |
+|-------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| ResultOrderBookObject | An object containing the symbol, order book type, current price, and the order book data (asks and bids).|
+
+## getAllSpotTickerDensities
+This asynchronous TypeScript function, getAllSpotTickerDensities, retrieves the order book for a specified spot ticker, calculates the density of orders, and returns the results.
+
+### Parameters
+| Parameter     | Type   | Description                                                                              |
+|---------------|--------|------------------------------------------------------------------------------------------|
+| `symbol`  | string | The symbol for which to retrieve the order book (e.g., BTCUSDT).|
+| `densityCoefficient`  | number | A coefficient used to calculate the density of orders.|
+| `orderBookLimit`  | number | The limit on the number of orders to retrieve for the order book.|
+
+### Usage
+```typescript
+const densities = await getAllSpotTickerDensities('BTCUSDT', 1.5, 100);
+```
+
+### Result
+| Type  | Description                                                                                                                               |
+|-------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| Object | An object containing the symbol, data type (spot), and arrays of calculated densities for asks and bids.|
+
+## getAllFuturesTickerDensities
+This asynchronous TypeScript function, getAllFuturesTickerDensities, retrieves the order book for a specified futures ticker, calculates the density of orders, and returns the results.
+
+### Parameters
+| Parameter     | Type   | Description                                                                              |
+|---------------|--------|------------------------------------------------------------------------------------------|
+| `symbol`  | string | The symbol for which to retrieve the order book (e.g., BTCUSDT).|
+| `densityCoefficient`  | number | A coefficient used to calculate the density of orders.|
+| `orderBookLimit`  | number | The limit on the number of orders to retrieve for the order book.|
+
+### Usage
+```typescript
+const densities = await getAllFuturesTickerDensities('BTCUSDT', 1.5, 100);
+```
+
+### Result
+| Type  | Description                                                                                                                               |
+|-------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| Object | An object containing the symbol, data type (futures), and arrays of calculated densities for asks and bids.|
+
+
+## getSpotTrend
+This asynchronous TypeScript function, getSpotTrend, retrieves candle chart data for a specified spot ticker from the Binance API and calculates the trend based on the retrieved data.
+
+### Parameters
+| Parameter     | Type   | Description                                                                              |
+|---------------|--------|------------------------------------------------------------------------------------------|
+| `options`  | CandlesOptions | An object containing options for retrieving the candle data, such as symbol, interval, limit, start time, and end time.|
+
+### Usage
+```typescript
+const options = {
+    symbol: "BTCUSDT",
+    interval: "1h",
+    limit: 100,
+    startTime: 1622505600000,
+    endTime: 1622592000000
+};
+const trend = await getSpotTrend(options);
+```
+
+### Result
+| Type  | Description                                                                                                                               |
+|-------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| TrendResult | The result of the trend calculation based on the candle data.|
+
+## getFuturesTrend
+This asynchronous TypeScript function, getFuturesTrend, retrieves candle chart data for a specified futures ticker from the Binance API and calculates the trend based on the retrieved data.
+
+### Parameters
+| Parameter     | Type   | Description                                                                              |
+|---------------|--------|------------------------------------------------------------------------------------------|
+| `options`  | CandlesOptions | An object containing options for retrieving the candle data, such as symbol, interval, limit, start time, and end time.|
+
+### Usage
+```typescript
+const options = {
+    symbol: "BTCUSDT",
+    interval: "1h",
+    limit: 100,
+    startTime: 1622505600000,
+    endTime: 1622592000000
+};
+const trend = await getFuturesTrend(options);
+```
+
+### Result
+| Type  | Description                                                                                                                               |
+|-------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| TrendResult | The result of the trend calculation based on the candle data.|
+
+## getSpotCorrelation
+This asynchronous TypeScript function, getSpotCorrelation, retrieves candle chart data for multiple spot tickers from the Binance API, calculates the correlation between each ticker and a specified second ticker, and returns the results.
+
+### Parameters
+| Parameter     | Type           | Description                                                                              |
+|---------------|----------------|------------------------------------------------------------------------------------------|
+| `tickersArrayOptions`  | CandlesOptions[] | An array of options for retrieving the candle data for multiple tickers.|
+| `secondTickerOptions`  | CandlesOptions | Options for retrieving the candle data for the second ticker.|
+
+### Usage
+```typescript
+const tickersArrayOptions = [
+    { symbol: "BTCUSDT", interval: "1h", limit: 100, startTime: 1622505600000, endTime: 1622592000000 },
+    // more options...
+];
+const secondTickerOptions = { symbol: "ETHUSDT", interval: "1h", limit: 100, startTime: 1622505600000, endTime: 1622592000000 };
+const correlationResult = await getSpotCorrelation(tickersArrayOptions, secondTickerOptions);
+```
+
+### Result
+| Type  | Description                                                                                                                               |
+|-------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| GetCorrelationResult | An object containing the symbol of the second ticker and an array of correlation results for each ticker.|
+
+## getFuturesCorrelation
+This asynchronous TypeScript function, getFuturesCorrelation, retrieves candle chart data for multiple futures tickers from the Binance API, calculates the correlation between each ticker and a specified second ticker, and returns the results.
+
+### Parameters
+| Parameter     | Type           | Description                                                                              |
+|---------------|----------------|------------------------------------------------------------------------------------------|
+| `tickersArrayOptions`  | CandlesOptions[] | An array of options for retrieving the candle data for multiple tickers.|
+| `secondTickerOptions`  | CandlesOptions | Options for retrieving the candle data for the second ticker.|
+
+### Usage
+```typescript
+const tickersArrayOptions = [
+    { symbol: "BTCUSDT", interval: "1h", limit: 100, startTime: 1622505600000, endTime: 1622592000000 },
+    // more options...
+];
+const secondTickerOptions = { symbol: "ETHUSDT", interval: "1h", limit: 100, startTime: 1622505600000, endTime: 1622592000000 };
+const correlationResult = await getFuturesCorrelation(tickersArrayOptions, secondTickerOptions);
+```
+
+### Result
+| Type  | Description                                                                                                                               |
+|-------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| GetCorrelationResult | An object containing the symbol of the second ticker and an array of correlation results for each ticker.|
+
+## getSpotPumpsDumps
+This asynchronous TypeScript function, getSpotPumpsDumps, retrieves candle chart data for a specified spot ticker from the Binance API, calculates significant price movements (pumps and dumps) based on a specified coefficient, and returns the results.
+
+### Parameters
+| Parameter     | Type           | Description                                                                              |
+|---------------|----------------|------------------------------------------------------------------------------------------|
+| `tickerOption`  | CandlesOptions | Options for retrieving the candle data, such as symbol, interval, limit, start time, and end time.|
+| `coefficient`  | number | A multiplier used to determine the threshold for significant price changes.|
+
+### Usage
+```typescript
+const tickerOption = {
+    symbol: "BTCUSDT",
+    interval: "1h",
+    limit: 100,
+    startTime: 1622505600000,
+    endTime: 1622592000000
+};
+const coefficient = 1.5;
+const pumpsDumps = await getSpotPumpsDumps(tickerOption, coefficient);
+```
+
+### Result
+| Type  | Description                                                                                                                               |
+|-------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| PumpDumpResult | An object containing the symbol, symbol type, interval, limit, start time, end time, and arrays of candles identified as pumps and dumps.|
+
+## getFuturesPumpsDumps
+This asynchronous TypeScript function, getFuturesPumpsDumps, retrieves candle chart data for a specified futures ticker from the Binance API, calculates significant price movements (pumps and dumps) based on a specified coefficient, and returns the results.
+### Parameters
+| Parameter     | Type           | Description                                                                              |
+|---------------|----------------|------------------------------------------------------------------------------------------|
+| `tickerOption`  | CandlesOptions | Options for retrieving the candle data, such as symbol, interval, limit, start time, and end time.|
+| `coefficient`  | number | A multiplier used to determine the threshold for significant price changes.|
+
+### Usage
+```typescript
+const tickerOption = {
+    symbol: "BTCUSDT",
+    interval: "1h",
+    limit: 100,
+    startTime: 1622505600000,
+    endTime: 1622592000000
+};
+const coefficient = 1.5;
+const pumpsDumps = await getFuturesPumpsDumps(tickerOption, coefficient);
+```
+
+### Result
+| Type  | Description                                                                                                                               |
+|-------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| PumpDumpResult | An object containing the symbol, symbol type, interval, limit, start time, end time, and arrays of candles identified as pumps and dumps.|
 
 # Interfaces
 
