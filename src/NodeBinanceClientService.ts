@@ -352,4 +352,4 @@ class NodeBinanceClientService {
     }
 }
 
-module.exports = NodeBinanceClientService
+export default NodeBinanceClientService
